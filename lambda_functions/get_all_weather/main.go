@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -12,7 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/ouiasy/aws_lambda_example/internal/types"
+	"github.com/ouiasy/aws_lambda_example/internal/httputil"
+	"github.com/ouiasy/aws_lambda_example/internal/model"
 )
 
 var (
@@ -37,50 +37,18 @@ func GetAllWeather(
 	)
 	if err != nil {
 		log.Println(err)
-		return errResponse(http.StatusInternalServerError, err.Error()), err
+		return httputil.ErrResponse(http.StatusInternalServerError, err.Error()), err
 	}
-	allWeather := &types.AllWeather{}
+	allWeather := &model.AllWeather{}
 	err = attributevalue.UnmarshalListOfMaps(result.Items, allWeather)
 	if err != nil {
 		log.Println(err)
-		return errResponse(http.StatusInternalServerError, err.Error()), err
+		return httputil.ErrResponse(http.StatusInternalServerError, err.Error()), err
 	}
 
-	return response(http.StatusOK, allWeather), nil
+	return httputil.Response(http.StatusOK, allWeather), nil
 }
 
 func main() {
 	lambda.Start(GetAllWeather)
-}
-
-func response(code int, object interface{}) events.APIGatewayV2HTTPResponse {
-	marshalled, err := json.Marshal(object)
-	if err != nil {
-		return errResponse(http.StatusInternalServerError, err.Error())
-	}
-
-	return events.APIGatewayV2HTTPResponse{
-		StatusCode: code,
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
-		Body:            string(marshalled),
-		IsBase64Encoded: false,
-	}
-}
-
-func errResponse(status int, body string) events.APIGatewayV2HTTPResponse {
-	message := map[string]string{
-		"message": body,
-	}
-
-	messageBytes, _ := json.Marshal(&message)
-
-	return events.APIGatewayV2HTTPResponse{
-		StatusCode: status,
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
-		Body: string(messageBytes),
-	}
 }

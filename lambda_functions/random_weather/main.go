@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	dynamotypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/ouiasy/aws_lambda_example/internal/types"
+	"github.com/ouiasy/aws_lambda_example/internal/model"
 )
 
 var (
@@ -45,7 +45,7 @@ func UpdateRandomWeather(ctx context.Context, event json.RawMessage) error {
 		req.CityID = cityIds[index]
 	}
 
-	w := types.Weather{
+	w := model.Weather{
 		CityID:   req.CityID,
 		CityName: cityNames[req.CityID],
 	}
