@@ -21,3 +21,9 @@ compile-get_city_weather:
 	mkdir -p bin/get_city_weather
 	GOOS=linux GOARCH=amd64 go build -o bin/get_city_weather/bootstrap lambda_functions/get_city_weather/main.go
 	zip -j bin/get_city_weather/main.zip bin/get_city_weather/bootstrap
+
+.PHONY: compile-put_city_weather
+compile-put_city_weather:
+	mkdir -p bin/put_city_weather
+	GOOS=linux GOARCH=amd64 go build -o bin/put_city_weather/bootstrap lambda_functions/put_city_weather/main.go
+	zip -j bin/put_city_weather/main.zip bin/put_city_weather/bootstrap
